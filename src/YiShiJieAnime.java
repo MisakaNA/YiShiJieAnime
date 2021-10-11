@@ -10,6 +10,7 @@ import java.util.List;
 public class YiShiJieAnime {
     private final String BASE_URL = "http://ysjdm.com";
     private final List<SearchResult> resultList;
+    private boolean flag = false;
 
     public YiShiJieAnime() {
         resultList = new ArrayList<>();
@@ -18,13 +19,20 @@ public class YiShiJieAnime {
     public List<SearchResult> searchAnime(String keyword) throws IOException {
 
         String searchUrl = BASE_URL + "/search.asp?searchword=" + URLEncoder.encode(keyword, "gb2312");
+        Document doc = null;
 
-        Document doc = Jsoup.connect(searchUrl)
-                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("Accept-Encoding", "gzip, deflate")
-                .timeout(3000)
-                .get();
+        try {
+            doc = Jsoup.connect(searchUrl)
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36")
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .header("Accept-Encoding", "gzip, deflate")
+                    .timeout(3000)
+                    .get();
+        } catch (Exception e) {
+            searchAnime(keyword);
+        }
+
+        if (doc == null) return null;
 
         Element animeResults = doc.select("div.movie-chrList").select("ul").get(0);
         if (animeResults.getElementsByTag("li").size() == 0) {
