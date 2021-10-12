@@ -1,21 +1,12 @@
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-
+import java.util.*;
+import javafx.util.Pair;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
-
 import java.io.IOException;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Anime {
     private final String BASE_URL = "http://ysjdm.com";
@@ -27,16 +18,18 @@ public class Anime {
     private String overview;
     private String cast;
     private String staff;
-    private HashMap<String, Episode> episodeResources1;
-    private HashMap<String, Episode> episodeResources2;
+    private List<Pair<String, Episode>> episodeResources1;
+    private List<Pair<String, Episode>> episodeResources2;
     private HashMap<String, String> downloadResources1;
     private HashMap<String, String> downloadResources2;
     WebClient web;
 
-    public Anime(String pageURL) throws IOException {
+
+    public Anime(String name, String pageURL) throws IOException {
+        this.name = name;
         this.pageURL = pageURL;
-        episodeResources1 = new HashMap<>();
-        episodeResources2 = new HashMap<>();
+        episodeResources1 = new ArrayList<>();
+        episodeResources2 = new ArrayList<>();
         downloadResources1 = new HashMap<>();
         downloadResources2 = new HashMap<>();
         web = new WebClient();
@@ -52,11 +45,11 @@ public class Anime {
         return downloadResources2;
     }
 
-    public HashMap<String, Episode> getEpisodeResources1() {
+    public List<Pair<String, Episode>> getEpisodeResources1() {
         return episodeResources1;
     }
 
-    public HashMap<String, Episode> getEpisodeResources2() {
+    public List<Pair<String, Episode>> getEpisodeResources2() {
         return episodeResources2;
     }
 
@@ -86,15 +79,17 @@ public class Anime {
                 String url = episodeElement.childNode(0).attr("href");
                 switch(tracker) {
                     case 1:
-                        episodeResources1.put(title, new Episode(url));
+                        episodeResources1.add(new Pair<>(title, new Episode(url)));
                         break;
                     case 2:
-                        episodeResources2.put(title, new Episode(url));
+                        episodeResources2.add(new Pair<>(title, new Episode(url)));
                         break;
                     default:
                 }
 
             }
+            episodeResources1.sort(new CompareEpisodeTitle());
+            episodeResources2.sort(new CompareEpisodeTitle());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -122,19 +117,13 @@ public class Anime {
             e.printStackTrace();
         }
     }
+}
 
-    /*private String getVideoUrl(String url) throws IOException, InterruptedException {
-        Document doc = Jsoup.connect(BASE_URL + url).get();
-        String jsLink = doc.select("div[id=ccplay]").select("script").get(0).attr("src");
+class CompareEpisodeTitle implements Comparator<Pair<String, Episode>> {
 
-        web.getOptions().setCssEnabled(false);
-        web.getOptions().setJavaScriptEnabled(true);
-        web.getOptions().setThrowExceptionOnScriptError(false);
-        HtmlPage htmlPage = web.getPage(BASE_URL + jsLink);
-        String str = Jsoup.parse(htmlPage.asXml()).toString();
-        Matcher m = Pattern.compile("https?://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]").matcher(str);
-        if (m.find()) return m.group();
-
-        return  "";
-    }*/
+    @Override
+    public int compare(Pair<String, Episode> o1, Pair<String, Episode> o2) {
+        return Integer.parseInt(o1.getKey().replaceAll("\\D", ""))
+                - Integer.parseInt(o2.getKey().replaceAll("\\D", ""));
+    }
 }

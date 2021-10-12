@@ -1,4 +1,4 @@
-public class SearchResult {
+public class AnimeOutline {
 
     private String coverPictureURL;
     private String name;
@@ -6,8 +6,18 @@ public class SearchResult {
     private String status;
     private String topic;
 
+    public AnimeOutline(String name, String innerURL) {
+        this.name = name;
+        this.innerURL = innerURL;
+    }
 
-    public SearchResult(String name, String coverPictureURL, String innerURL, String status, String topic) {
+    public AnimeOutline(String name, String innerURL, String status) {
+        this.name = name;
+        this.innerURL = innerURL;
+        this.status = status;
+    }
+
+    public AnimeOutline(String name, String coverPictureURL, String innerURL, String status, String topic) {
         this.coverPictureURL = coverPictureURL;
         this.name = name;
         this.innerURL = innerURL;
@@ -15,10 +25,7 @@ public class SearchResult {
         this.status = status;
     }
 
-    public SearchResult(String name, String innerURL) {
-        this.name = name;
-        this.innerURL = innerURL;
-    }
+
 
     @Override
     public String toString() {
