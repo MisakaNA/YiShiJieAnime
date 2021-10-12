@@ -76,12 +76,16 @@ public class YiShiJieAnime {
     private void parseHotLists(Document doc) {
         assert doc != null;
         Elements hotListElements = doc.select("div.home-top-new").select("dl");
-        this.hotLists.put("无修", extractHotListAnimes(hotListElements.get(0)));
-        this.hotLists.put("后宫", extractHotListAnimes(hotListElements.get(1)));
-        this.hotLists.put("热血", extractHotListAnimes(hotListElements.get(2)));
-        this.hotLists.put("恋爱", extractHotListAnimes(hotListElements.get(3)));
-        this.hotLists.put("奇幻", extractHotListAnimes(hotListElements.get(4)));
-        this.hotLists.put("冒险", extractHotListAnimes(hotListElements.get(5)));
+        try {
+            this.hotLists.put("无修", extractHotListAnimes(hotListElements.get(0)));
+            this.hotLists.put("后宫", extractHotListAnimes(hotListElements.get(1)));
+            this.hotLists.put("热血", extractHotListAnimes(hotListElements.get(2)));
+            this.hotLists.put("恋爱", extractHotListAnimes(hotListElements.get(3)));
+            this.hotLists.put("奇幻", extractHotListAnimes(hotListElements.get(4)));
+            this.hotLists.put("冒险", extractHotListAnimes(hotListElements.get(5)));
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println("排行榜错误：排行榜数量不足");
+        }
     }
 
     private List<AnimeOutline> extractHotListAnimes(Element listElement) {
